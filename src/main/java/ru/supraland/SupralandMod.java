@@ -64,7 +64,7 @@ public class SupralandMod implements ModInitializer {
         LINKING_TOOL = new LinkingToolItem(new Item.Settings().maxCount(1));
         Registry.register(Registries.ITEM, id("linking_tool"), LINKING_TOOL);
 
-        UPGRADE_CHEST = new UpgradeChestBlock(AbstractBlock.Settings.create().strength(2.0f).sounds(BlockSoundGroup.WOOD));
+        UPGRADE_CHEST = new UpgradeChestBlock(AbstractBlock.Settings.create().strength(-1.0f).sounds(BlockSoundGroup.WOOD));
         Registry.register(Registries.BLOCK, id("upgrade_chest"), UPGRADE_CHEST);
         Registry.register(Registries.ITEM, id("upgrade_chest"), new BlockItem(UPGRADE_CHEST, new Item.Settings()));
 
