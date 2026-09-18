@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class RedCrystalProjectileEntity extends SnowballEntity {
     private float damage = 5.0f;
 
-    public RedCrystalProjectileEntity(EntityType<? extends SnowballEntity> entityType, World world) {
+    public RedCrystalProjectileEntity(EntityType<RedCrystalProjectileEntity> entityType, World world) {
         super(entityType, world);
     }
 
