@@ -2,7 +2,6 @@ package ru.supraland;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -33,7 +32,6 @@ public class SupralandDoorBlock extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        // Дверь нельзя открыть просто кликом — нужен приёмник
         if (!world.isClient) {
             player.sendMessage(net.minecraft.text.Text.literal("Эта дверь открывается только через приёмник!"), true);
         }
