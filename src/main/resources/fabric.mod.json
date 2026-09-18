@@ -20,5 +20,10 @@
         "minecraft": "~1.20.1",
         "cardinal-components-base": "*",
         "cardinal-components-entity": "*"
+    },
+    "custom": {
+        "cardinal-components": [
+            "supralandmod:upgrade_data"
+        ]
     }
 }
