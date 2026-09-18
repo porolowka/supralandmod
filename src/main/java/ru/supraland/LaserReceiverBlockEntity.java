@@ -25,7 +25,7 @@ public class LaserReceiverBlockEntity extends BlockEntity {
         activeTime = 20;
 
         for (int i = 0; i < 10; i++) {
-            world.addParticle(ParticleTypes.DUST,
+            world.addParticle(ParticleTypes.CRIMSON_SPORE,
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                 world.random.nextGaussian() * 0.3, world.random.nextGaussian() * 0.3, world.random.nextGaussian() * 0.3);
         }
