@@ -1,6 +1,5 @@
 package ru.supraland;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -40,20 +39,8 @@ public class UpgradeChestBlock extends BlockWithEntity {
         return ActionResult.SUCCESS;
     }
 
-    // Нельзя сломать — прогресс ломания всегда 0
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, World world, BlockPos pos) {
         return 0.0f;
-    }
-
-    // Неразрушимый взрывами
-    @Override
-    public boolean shouldDropItemsOnExplosion() {
-        return false;
-    }
-
-    @Override
-    public float getBlastResistance() {
-        return 3600000.0f;
     }
 }
