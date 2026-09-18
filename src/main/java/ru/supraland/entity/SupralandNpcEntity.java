@@ -39,22 +39,11 @@ public class SupralandNpcEntity extends Entity {
 
     @Override
     public void tick() {
-        // NPC стоит на месте
     }
 
     @Override
     public boolean isPushable() {
         return false;
-    }
-
-    @Override
-    public boolean shouldRenderName() {
-        return false;
-    }
-
-    @Override
-    public boolean collides() {
-        return true;
     }
 
     public float[] getColor() {
