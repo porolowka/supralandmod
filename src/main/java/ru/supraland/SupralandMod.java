@@ -15,6 +15,8 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import net.minecraft.entity.EntityType;
+import ru.supraland.entity.SupralandNpcEntity;
 
 public class SupralandMod implements ModInitializer {
     public static final String MOD_ID = "supralandmod";
@@ -33,7 +35,19 @@ public class SupralandMod implements ModInitializer {
     public static BlockEntityType<LaserReceiverBlockEntity> LASER_RECEIVER_BE;
 
     @Override
+    public static EntityType<SupralandNpcEntity> RED_NPC;
+    public static EntityType<SupralandNpcEntity> BLUE_NPC;
     public void onInitialize() {
+        RED_NPC = Registry.register(Registries.ENTITY_TYPE, id("red_npc"),
+            EntityType.Builder.create((type, world) -> new SupralandNpcEntity(type, world, 1.0f, 0.0f, 0.0f), net.minecraft.entity.SpawnGroup.MISC)
+                .setDimensions(0.6f, 1.8f)
+                .build());
+
+        BLUE_NPC = Registry.register(Registries.ENTITY_TYPE, id("blue_npc"),
+            EntityType.Builder.create((type, world) -> new SupralandNpcEntity(type, world, 0.0f, 0.3f, 1.0f), net.minecraft.entity.SpawnGroup.MISC)
+                .setDimensions(0.6f, 1.8f)
+                .build());
+
         LOGGER.info("[Supraland Mod] Initializing...");
 
         SUPRALAND_SWORD = new SupralandSwordItem(new Item.Settings().maxCount(1));
