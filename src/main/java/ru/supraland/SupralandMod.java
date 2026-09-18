@@ -33,6 +33,8 @@ public class SupralandMod implements ModInitializer {
 
     public static BlockEntityType<UpgradeChestBlockEntity> UPGRADE_CHEST_BE;
     public static BlockEntityType<LaserReceiverBlockEntity> LASER_RECEIVER_BE;
+    public static EntityType<SupralandNpcEntity> RED_NPC;
+    public static EntityType<SupralandNpcEntity> BLUE_NPC;
 
     @Override
     public static EntityType<SupralandNpcEntity> RED_NPC;
