@@ -10,6 +10,10 @@ base { archivesName = project.archives_base_name }
 
 repositories {
     maven { url 'https://maven.fabricmc.net/' }
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://maven.ladysnake.org/releases'
+    }
 }
 
 dependencies {
@@ -17,6 +21,12 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // Cardinal Components API для 1.20.1
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.2"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.2"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.2"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.2"
 }
 
 processResources {
