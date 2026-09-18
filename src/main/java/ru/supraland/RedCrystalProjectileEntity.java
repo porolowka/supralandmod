@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class RedCrystalProjectileEntity extends SnowballEntity {
     private float damage = 5.0f;
 
-    public RedCrystalProjectileEntity(EntityType<RedCrystalProjectileEntity> entityType, World world) {
+    public RedCrystalProjectileEntity(EntityType<? extends SnowballEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -33,8 +33,10 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
 
     public static void register() {
         EntityType<RedCrystalProjectileEntity> type = FabricEntityTypeBuilder
-            .create(SpawnGroup.MISC, RedCrystalProjectileEntity::new)
+            .<RedCrystalProjectileEntity>create(SpawnGroup.MISC, (EntityType.EntityFactory<RedCrystalProjectileEntity>) RedCrystalProjectileEntity::new)
             .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
+            .trackRangeBlocks(4)
+            .trackedUpdateRate(10)
             .build();
         Registry.register(Registries.ENTITY_TYPE, new Identifier(SupralandMod.MOD_ID, "red_crystal_ball"), type);
     }
