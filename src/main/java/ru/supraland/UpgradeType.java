@@ -5,10 +5,9 @@ public enum UpgradeType {
     DOUBLE_JUMP("Двойной прыжок", "double_jump"),
     TRIPLE_JUMP("Тройной прыжок", "triple_jump"),
     HAPPINESS("Счастье (прыжок x3)", "happiness"),
-    SPEED_X15("Скорость x1.5", "speed_x15"),
     SWORD_DAMAGE("Урон меча +1", "sword_damage"),
     GUN_DAMAGE("Урон пушки +10%", "gun_damage"),
-    COIN_CAPACITY("Вместимость монет +30", "coin_capacity"),
+    COIN_CAPACITY("Вместимость монет x2", "coin_capacity"),
     COINS("Монеты (30 шт)", "coins"),
     FIRE_RATE("Скорострельность +10%", "fire_rate"),
     LASER("Лазер для пушки", "laser");
