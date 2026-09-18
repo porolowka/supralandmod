@@ -1,19 +1,21 @@
 package ru.supraland;
 
-import net.minecraft.entity.EntityType;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class RedCrystalProjectileEntity extends SnowballEntity {
     private float damage = 5.0f;
@@ -30,8 +32,8 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
     public float getDamage() { return damage; }
 
     public static void register() {
-        EntityType<RedCrystalProjectileEntity> type = EntityType.Builder
-            .<RedCrystalProjectileEntity>create(RedCrystalProjectileEntity::new, net.minecraft.entity.SpawnGroup.MISC)
+        EntityType<RedCrystalProjectileEntity> type = FabricEntityTypeBuilder
+            .create(SpawnGroup.MISC, RedCrystalProjectileEntity::new)
             .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
             .build();
         Registry.register(Registries.ENTITY_TYPE, new Identifier(SupralandMod.MOD_ID, "red_crystal_ball"), type);
