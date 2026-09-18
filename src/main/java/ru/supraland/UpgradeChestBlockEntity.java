@@ -29,6 +29,7 @@ public class UpgradeChestBlockEntity extends BlockEntity {
         }
 
         PlayerUpgradeData data = PlayerUpgradeData.get(player);
+        if (data == null) return;
 
         // Проверка монет
         if (upgradeType == UpgradeType.COINS && data.coins >= data.maxCoins) {
@@ -36,11 +37,14 @@ public class UpgradeChestBlockEntity extends BlockEntity {
             return;
         }
 
-        // Шарик-эффект
-        spawnBall(world, pos);
+        // Круг частиц
+        spawnCircle(world, pos);
 
         // Применяем улучшение
         data.applyUpgrade(upgradeType);
+
+        // Синхронизация с клиентом — чтобы HUD обновился
+        ModComponents.UPGRADE_DATA.sync(player);
 
         world.playSound(null, pos, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, 1.0f, 1.5f);
 
@@ -50,7 +54,7 @@ public class UpgradeChestBlockEntity extends BlockEntity {
         markDirty();
     }
 
-    private void spawnBall(World world, BlockPos pos) {
+    private void spawnCircle(World world, BlockPos pos) {
         if (world == null) return;
         for (int i = 0; i < 40; i++) {
             double angle = (Math.PI * 2 * i) / 40;
@@ -60,8 +64,6 @@ public class UpgradeChestBlockEntity extends BlockEntity {
                 pos.getX() + 0.5 + dx, pos.getY() + 1.0, pos.getZ() + 0.5 + dz,
                 -dx * 0.05, 0.4, -dz * 0.05);
         }
-        world.addParticle(ParticleTypes.TOTEM_OF_UNDYING,
-            pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 0, 0.5, 0);
     }
 
     @Override
