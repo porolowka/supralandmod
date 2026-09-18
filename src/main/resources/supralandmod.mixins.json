@@ -6,8 +6,7 @@
     "mixins": [
         "PlayerJumpMixin",
         "PlayerMovementMixin",
-        "PlayerLandMixin",
-        "MobSpawnMixin"
+        "PlayerLandMixin"
     ],
     "client": [],
     "injectors": {
