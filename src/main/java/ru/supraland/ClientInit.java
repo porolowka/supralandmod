@@ -12,5 +12,7 @@ public class ClientInit implements ClientModInitializer {
         HudRenderCallback.EVENT.register((drawContext, tickDelta) -> {
             CoinHud.render(drawContext);
         });
+        EntityRendererRegistry.register(SupralandMod.RED_NPC, SupralandNpcRenderer::new);
+        EntityRendererRegistry.register(SupralandMod.BLUE_NPC, SupralandNpcRenderer::new);
     }
 }
