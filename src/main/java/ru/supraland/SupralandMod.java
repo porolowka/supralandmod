@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -51,19 +50,19 @@ public class SupralandMod implements ModInitializer {
         Registry.register(Registries.ITEM, id("linking_tool"), LINKING_TOOL);
 
         // Blocks
-        UPGRADE_CHEST = new UpgradeChestBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+        UPGRADE_CHEST = new UpgradeChestBlock(AbstractBlock.Settings.create().strength(2.0f).sounds(BlockSoundGroup.WOOD));
         Registry.register(Registries.BLOCK, id("upgrade_chest"), UPGRADE_CHEST);
         Registry.register(Registries.ITEM, id("upgrade_chest"), new BlockItem(UPGRADE_CHEST, new Item.Settings()));
 
-        LASER_RECEIVER = new LaserReceiverBlock(AbstractBlock.Settings.of(Material.METAL).strength(3.0f).sounds(BlockSoundGroup.METAL).luminance(s -> 7));
+        LASER_RECEIVER = new LaserReceiverBlock(AbstractBlock.Settings.create().strength(3.0f).sounds(BlockSoundGroup.METAL).luminance(s -> 7));
         Registry.register(Registries.BLOCK, id("laser_receiver"), LASER_RECEIVER);
         Registry.register(Registries.ITEM, id("laser_receiver"), new BlockItem(LASER_RECEIVER, new Item.Settings()));
 
-        SUPRALAND_DOOR = new SupralandDoorBlock(AbstractBlock.Settings.of(Material.METAL).strength(5.0f).sounds(BlockSoundGroup.METAL).nonOpaque());
+        SUPRALAND_DOOR = new SupralandDoorBlock(AbstractBlock.Settings.create().strength(5.0f).sounds(BlockSoundGroup.METAL).nonOpaque());
         Registry.register(Registries.BLOCK, id("supraland_door"), SUPRALAND_DOOR);
         Registry.register(Registries.ITEM, id("supraland_door"), new BlockItem(SUPRALAND_DOOR, new Item.Settings()));
 
-        SUPRALAND_BUTTON = new SupralandButtonBlock(AbstractBlock.Settings.of(Material.METAL).strength(3.0f).sounds(BlockSoundGroup.METAL));
+        SUPRALAND_BUTTON = new SupralandButtonBlock(AbstractBlock.Settings.create().strength(3.0f).sounds(BlockSoundGroup.METAL));
         Registry.register(Registries.BLOCK, id("supraland_button"), SUPRALAND_BUTTON);
         Registry.register(Registries.ITEM, id("supraland_button"), new BlockItem(SUPRALAND_BUTTON, new Item.Settings()));
 
