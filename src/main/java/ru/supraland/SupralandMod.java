@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
@@ -15,7 +17,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.minecraft.entity.EntityType;
 import ru.supraland.entity.SupralandNpcEntity;
 
 public class SupralandMod implements ModInitializer {
@@ -37,20 +38,22 @@ public class SupralandMod implements ModInitializer {
     public static EntityType<SupralandNpcEntity> BLUE_NPC;
 
     @Override
-    public static EntityType<SupralandNpcEntity> RED_NPC;
-    public static EntityType<SupralandNpcEntity> BLUE_NPC;
     public void onInitialize() {
+        LOGGER.info("[Supraland Mod] Initializing...");
+
         RED_NPC = Registry.register(Registries.ENTITY_TYPE, id("red_npc"),
-            EntityType.Builder.create((type, world) -> new SupralandNpcEntity(type, world, 1.0f, 0.0f, 0.0f), net.minecraft.entity.SpawnGroup.MISC)
+            EntityType.Builder.<SupralandNpcEntity>create(
+                (type, world) -> new SupralandNpcEntity(type, world, 1.0f, 0.0f, 0.0f),
+                SpawnGroup.MISC)
                 .setDimensions(0.6f, 1.8f)
-                .build());
+                .build("red_npc"));
 
         BLUE_NPC = Registry.register(Registries.ENTITY_TYPE, id("blue_npc"),
-            EntityType.Builder.create((type, world) -> new SupralandNpcEntity(type, world, 0.0f, 0.3f, 1.0f), net.minecraft.entity.SpawnGroup.MISC)
+            EntityType.Builder.<SupralandNpcEntity>create(
+                (type, world) -> new SupralandNpcEntity(type, world, 0.0f, 0.3f, 1.0f),
+                SpawnGroup.MISC)
                 .setDimensions(0.6f, 1.8f)
-                .build());
-
-        LOGGER.info("[Supraland Mod] Initializing...");
+                .build("blue_npc"));
 
         SUPRALAND_SWORD = new SupralandSwordItem(new Item.Settings().maxCount(1));
         Registry.register(Registries.ITEM, id("supraland_sword"), SUPRALAND_SWORD);
