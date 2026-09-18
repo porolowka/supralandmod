@@ -1,6 +1,7 @@
 package ru.supraland;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,18 +30,15 @@ public class LinkingToolItem extends Item {
 
         BlockState state = world.getBlockState(pos);
 
-        // Первый клик — по приёмнику
         if (state.getBlock() instanceof LaserReceiverBlock) {
             selectedReceiver = pos.toImmutable();
             if (player != null) {
                 player.sendMessage(Text.literal("Приёмник выбран. Теперь кликните по двери или кнопке."), true);
             }
-            // Частицы-линия
             drawLineParticles(world, pos, player);
             return ActionResult.SUCCESS;
         }
 
-        // Второй клик — по двери или кнопке
         if (selectedReceiver != null) {
             if (state.getBlock() instanceof SupralandDoorBlock || state.getBlock() instanceof SupralandButtonBlock) {
                 BlockEntity be = world.getBlockEntity(selectedReceiver);
