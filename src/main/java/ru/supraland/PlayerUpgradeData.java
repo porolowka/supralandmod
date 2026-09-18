@@ -23,14 +23,13 @@ public class PlayerUpgradeData implements Component {
     public void applyUpgrade(UpgradeType type) {
         switch (type) {
             case SPEED_X2: speedMultiplier *= 2.0; break;
-            case SPEED_X15: speedMultiplier *= 1.5; break;
             case DOUBLE_JUMP: maxJumps = Math.max(maxJumps, 2); jumpsRemaining = maxJumps; break;
             case TRIPLE_JUMP: maxJumps = Math.max(maxJumps, 3); jumpsRemaining = maxJumps; break;
             case HAPPINESS: jumpHeightMultiplier *= 3.0; break;
             case SWORD_DAMAGE: swordBonusDamage += 1; break;
             case GUN_DAMAGE: gunDamageMultiplier += 0.10; break;
             case FIRE_RATE: fireRateMultiplier += 0.10; break;
-            case COIN_CAPACITY: maxCoins += 30; break;
+            case COIN_CAPACITY: maxCoins *= 2; break;
             case COINS: coins = Math.min(coins + 30, maxCoins); break;
             case LASER: hasLaser = true; break;
         }
