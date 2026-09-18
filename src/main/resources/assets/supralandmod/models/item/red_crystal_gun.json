@@ -1,0 +1,6 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+        "layer0": "supralandmod:item/red_crystal_gun"
+    }
+}

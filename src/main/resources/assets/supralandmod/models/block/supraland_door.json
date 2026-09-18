@@ -1,0 +1,4 @@
+{
+    "parent": "block/cube_all",
+    "textures": { "all": "supralandmod:block/supraland_door" }
+}

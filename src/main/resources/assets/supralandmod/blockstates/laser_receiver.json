@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "activated=false": { "model": "supralandmod:block/laser_receiver" },
+        "activated=true": { "model": "supralandmod:block/laser_receiver" }
+    }
+}

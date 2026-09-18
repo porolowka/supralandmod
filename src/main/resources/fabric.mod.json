@@ -1,0 +1,24 @@
+{
+    "schemaVersion": 1,
+    "id": "supralandmod",
+    "version": "1.0.0",
+    "name": "Supraland Mod",
+    "description": "Мод, добавляющий механики из Supraland в Minecraft",
+    "authors": ["SupralandMod"],
+    "contact": {},
+    "license": "MIT",
+    "environment": "*",
+    "entrypoints": {
+        "main": ["ru.supraland.SupralandMod"],
+        "client": ["ru.supraland.ClientInit"],
+        "cardinal-components-entity": ["ru.supraland.ModComponents"]
+    },
+    "mixins": ["supralandmod.mixins.json"],
+    "depends": {
+        "fabricloader": ">=0.15.0",
+        "fabric-api": "*",
+        "minecraft": "~1.20.1",
+        "cardinal-components-base": "*",
+        "cardinal-components-entity": "*"
+    }
+}

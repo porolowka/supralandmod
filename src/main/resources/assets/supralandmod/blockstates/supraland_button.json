@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "pressed=false": { "model": "supralandmod:block/supraland_button" },
+        "pressed=true": { "model": "supralandmod:block/supraland_button" }
+    }
+}

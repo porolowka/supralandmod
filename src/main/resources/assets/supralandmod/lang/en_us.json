@@ -1,0 +1,20 @@
+{
+    "item.supralandmod.supraland_sword": "Supraland Sword",
+    "item.supralandmod.red_crystal_gun": "Red Crystal Gun",
+    "item.supralandmod.linking_tool": "Linking Tool",
+    "item.supralandmod.chest_speed_x2": "Speed Chest x2",
+    "item.supralandmod.chest_double_jump": "Double Jump Chest",
+    "item.supralandmod.chest_triple_jump": "Triple Jump Chest",
+    "item.supralandmod.chest_happiness": "Happiness Chest",
+    "item.supralandmod.chest_speed_x15": "Speed Chest x1.5",
+    "item.supralandmod.chest_sword_damage": "Sword Damage Chest",
+    "item.supralandmod.chest_gun_damage": "Gun Damage Chest",
+    "item.supralandmod.chest_coin_capacity": "Coin Capacity Chest",
+    "item.supralandmod.chest_coins": "Coins Chest",
+    "item.supralandmod.chest_fire_rate": "Fire Rate Chest",
+    "item.supralandmod.chest_laser": "Laser Chest",
+    "block.supralandmod.upgrade_chest": "Upgrade Chest",
+    "block.supralandmod.laser_receiver": "Laser Receiver",
+    "block.supralandmod.supraland_door": "Supraland Door",
+    "block.supralandmod.supraland_button": "Supraland Button"
+}

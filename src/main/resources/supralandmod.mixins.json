@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "ru.supraland.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "PlayerJumpMixin",
+        "PlayerMovementMixin",
+        "PlayerLandMixin"
+    ],
+    "client": [],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

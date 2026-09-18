@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "open=false": { "model": "supralandmod:block/supraland_door" },
+        "open=true": { "model": "supralandmod:block/supraland_door" }
+    }
+}

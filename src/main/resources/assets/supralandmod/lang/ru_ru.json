@@ -1,0 +1,20 @@
+{
+    "item.supralandmod.supraland_sword": "Меч Supraland",
+    "item.supralandmod.red_crystal_gun": "Красная пушка",
+    "item.supralandmod.linking_tool": "Инструмент-связыватель",
+    "item.supralandmod.chest_speed_x2": "Сундук скорости x2",
+    "item.supralandmod.chest_double_jump": "Сундук двойного прыжка",
+    "item.supralandmod.chest_triple_jump": "Сундук тройного прыжка",
+    "item.supralandmod.chest_happiness": "Сундук счастья",
+    "item.supralandmod.chest_speed_x15": "Сундук скорости x1.5",
+    "item.supralandmod.chest_sword_damage": "Сундук урона меча",
+    "item.supralandmod.chest_gun_damage": "Сундук урона пушки",
+    "item.supralandmod.chest_coin_capacity": "Сундук вместимости монет",
+    "item.supralandmod.chest_coins": "Сундук монет",
+    "item.supralandmod.chest_fire_rate": "Сундук скорострельности",
+    "item.supralandmod.chest_laser": "Сундук лазера",
+    "block.supralandmod.upgrade_chest": "Сундук улучшения",
+    "block.supralandmod.laser_receiver": "Лазерный приёмник",
+    "block.supralandmod.supraland_door": "Дверь Supraland",
+    "block.supralandmod.supraland_button": "Кнопка Supraland"
+}
