@@ -16,6 +16,10 @@ public class CoinHud {
         PlayerUpgradeData data = PlayerUpgradeData.get(player);
         if (data == null) return;
 
+        public void sync(PlayerEntity player) {
+            ModComponents.UPGRADE_DATA.sync(player);
+        }
+
         TextRenderer textRenderer = client.textRenderer;
         Window window = client.getWindow();
 
