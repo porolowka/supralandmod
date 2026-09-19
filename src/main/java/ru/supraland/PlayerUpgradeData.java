@@ -1,10 +1,10 @@
 package ru.supraland;
 
-import dev.onyxstudios.cca.api.v3.component.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.Component;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 
-public class PlayerUpgradeData implements AutoSyncedComponent {
+public class PlayerUpgradeData implements Component {
     public double speedMultiplier = 1.0;
     public int maxJumps = 1;
     public double jumpHeightMultiplier = 1.0;
@@ -33,11 +33,6 @@ public class PlayerUpgradeData implements AutoSyncedComponent {
             case COINS: coins = Math.min(coins + 30, maxCoins); break;
             case LASER: hasLaser = true; break;
         }
-    }
-
-    @Override
-    public boolean shouldSyncWith(PlayerEntity player) {
-        return true;
     }
 
     @Override
