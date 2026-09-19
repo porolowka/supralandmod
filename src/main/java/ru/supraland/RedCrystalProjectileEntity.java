@@ -16,6 +16,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class RedCrystalProjectileEntity extends SnowballEntity {
@@ -29,13 +30,8 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
         super(world, owner);
     }
 
-    public void setDamage(float damage) {
-        this.damage = damage;
-    }
-
-    public float getDamage() {
-        return damage;
-    }
+    public void setDamage(float damage) { this.damage = damage; }
+    public float getDamage() { return damage; }
 
     @Override
     protected float getGravity() {
@@ -44,7 +40,15 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
 
     @Override
     public void tick() {
+        // Принудительно отключаем гравитацию каждый тик
+        this.setNoGravity(true);
+        
+        // Сохраняем скорость до super.tick()
+        Vec3d vel = this.getVelocity();
         super.tick();
+        // Восстанавливаем скорость — если super.tick() применил гравитацию, отменяем
+        this.setVelocity(vel.x, vel.y, vel.z);
+        
         Entity owner = getOwner();
         if (owner != null && this.squaredDistanceTo(owner) > 262144) {
             this.discard();
@@ -55,7 +59,7 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
         EntityType<RedCrystalProjectileEntity> type = FabricEntityTypeBuilder
             .<RedCrystalProjectileEntity>create(SpawnGroup.MISC, (EntityType.EntityFactory<RedCrystalProjectileEntity>) RedCrystalProjectileEntity::new)
             .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
-            .trackRangeBlocks(128)
+            .trackRangeBlocks(64)
             .trackedUpdateRate(1)
             .build();
         Registry.register(Registries.ENTITY_TYPE, new Identifier(SupralandMod.MOD_ID, "red_crystal_ball"), type);
