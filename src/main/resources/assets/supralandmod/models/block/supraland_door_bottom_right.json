@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_right",
+  "textures": {
+    "bottom": "supralandmod:block/supraland_door_bottom",
+    "top": "supralandmod:block/supraland_door_top"
+  }
+}
