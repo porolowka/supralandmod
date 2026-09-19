@@ -3,79 +3,54 @@ package ru.supraland;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class LaserReceiverBlockEntity extends BlockEntity {
-    private List<BlockPos> linkedBlocks = new ArrayList<>();
-    private int activeTime = 0;
+    private int activeTicks = 0;
 
     public LaserReceiverBlockEntity(BlockPos pos, BlockState state) {
         super(SupralandMod.LASER_RECEIVER_BE, pos, state);
     }
 
+    // Вызывается когда шар или лазер попадает в приёмник
     public void activate() {
-        if (world == null) return;
-        activeTime = 20;
+        if (world == null || world.isClient) return;
 
-        for (int i = 0; i < 10; i++) {
-            world.addParticle(ParticleTypes.CRIMSON_SPORE,
-                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                world.random.nextGaussian() * 0.3, world.random.nextGaussian() * 0.3, world.random.nextGaussian() * 0.3);
-        }
+        // Открываем/закрываем связанную дверь
+        LinkingToolItem.toggleDoor(world, pos);
 
-        world.playSound(null, pos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-
-        for (BlockPos linked : linkedBlocks) {
-            BlockState state = world.getBlockState(linked);
-            if (state.getBlock() instanceof SupralandDoorBlock) {
-                ((SupralandDoorBlock) state.getBlock()).openDoor(world, linked, state);
-            } else if (state.getBlock() instanceof SupralandButtonBlock) {
-                ((SupralandButtonBlock) state.getBlock()).press(world, linked);
-            }
-        }
-
+        // Визуальная обратная связь — загорается на 1 секунду
+        world.setBlockState(pos, getCachedState().with(LaserReceiverBlock.ACTIVE, true), 3);
+        activeTicks = 20;
         markDirty();
+
+        world.playSound(null, pos,
+            SoundEvents.BLOCK_BEEHIVE_ENTER,
+            SoundCategory.BLOCKS, 0.5f, 1.5f);
     }
 
-    public void linkTo(BlockPos target) {
-        if (!linkedBlocks.contains(target)) {
-            linkedBlocks.add(target);
-            markDirty();
+    public static void tick(World world, BlockPos pos, BlockState state, LaserReceiverBlockEntity be) {
+        if (be.activeTicks > 0) {
+            be.activeTicks--;
+            if (be.activeTicks == 0) {
+                world.setBlockState(pos, state.with(LaserReceiverBlock.ACTIVE, false), 3);
+                be.markDirty();
+            }
         }
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
-        nbt.putInt("activeTime", activeTime);
-        nbt.putInt("linkCount", linkedBlocks.size());
-        for (int i = 0; i < linkedBlocks.size(); i++) {
-            BlockPos p = linkedBlocks.get(i);
-            nbt.putInt("link" + i + "x", p.getX());
-            nbt.putInt("link" + i + "y", p.getY());
-            nbt.putInt("link" + i + "z", p.getZ());
-        }
+        nbt.putInt("activeTicks", activeTicks);
         super.writeNbt(nbt);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        activeTime = nbt.getInt("activeTime");
-        linkedBlocks.clear();
-        int count = nbt.getInt("linkCount");
-        for (int i = 0; i < count; i++) {
-            linkedBlocks.add(new BlockPos(
-                nbt.getInt("link" + i + "x"),
-                nbt.getInt("link" + i + "y"),
-                nbt.getInt("link" + i + "z")
-            ));
-        }
+        activeTicks = nbt.getInt("activeTicks");
     }
 }
