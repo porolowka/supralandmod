@@ -15,8 +15,7 @@
         "client": [
             "ru.supraland.SupralandModClient"
         ]
-    }
-
+    },
     "mixins": ["supralandmod.mixins.json"],
     "depends": {
         "fabricloader": ">=0.15.0",
