@@ -1,6 +1,7 @@
 package ru.supraland;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -31,12 +32,28 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
     public void setDamage(float damage) { this.damage = damage; }
     public float getDamage() { return damage; }
 
+    // Нет гравитации — летит ровно
+    @Override
+    public boolean isNoGravity() {
+        return true;
+    }
+
+    // Лимит дальности — 32 чанка (512 блоков)
+    @Override
+    public void tick() {
+        super.tick();
+        Entity owner = getOwner();
+        if (owner != null && this.squaredDistanceTo(owner) > 262144) {
+            this.discard();
+        }
+    }
+
     public static void register() {
         EntityType<RedCrystalProjectileEntity> type = FabricEntityTypeBuilder
             .<RedCrystalProjectileEntity>create(SpawnGroup.MISC, (EntityType.EntityFactory<RedCrystalProjectileEntity>) RedCrystalProjectileEntity::new)
             .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
-            .trackRangeBlocks(4)
-            .trackedUpdateRate(10)
+            .trackRangeBlocks(128)
+            .trackedUpdateRate(1)
             .build();
         Registry.register(Registries.ENTITY_TYPE, new Identifier(SupralandMod.MOD_ID, "red_crystal_ball"), type);
     }
