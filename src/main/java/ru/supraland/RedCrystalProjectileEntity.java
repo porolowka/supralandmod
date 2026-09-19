@@ -23,12 +23,10 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
 
     public RedCrystalProjectileEntity(EntityType<? extends SnowballEntity> entityType, World world) {
         super(entityType, world);
-        this.setNoGravity(true);
     }
 
     public RedCrystalProjectileEntity(World world, LivingEntity owner) {
         super(world, owner);
-        this.setNoGravity(true);
     }
 
     public void setDamage(float damage) {
@@ -39,6 +37,13 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
         return damage;
     }
 
+    // Вот так правильно отключаем гравитацию в 1.20.1
+    @Override
+    protected float getGravity() {
+        return 0.0f;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         Entity owner = getOwner();
@@ -57,6 +62,7 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
         Registry.register(Registries.ENTITY_TYPE, new Identifier(SupralandMod.MOD_ID, "red_crystal_ball"), type);
     }
 
+    @Override
     protected void onCollision(HitResult hitResult) {
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             EntityHitResult entityHit = (EntityHitResult) hitResult;
