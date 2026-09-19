@@ -9,6 +9,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.RaycastContext;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import java.util.Map;
@@ -22,7 +25,7 @@ public class RedCrystalGunItem extends Item {
         super(settings);
     }
 
-    // Левый клик — шарик (вызывается с сервера через пакет)
+    // Левый клик — шарик (вызывается сервером через пакет)
     public static void shootBall(PlayerEntity player) {
         World world = player.getWorld();
         if (world.isClient) return;
@@ -47,7 +50,7 @@ public class RedCrystalGunItem extends Item {
             SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.5f);
     }
 
-    // Правый клик — лазер
+    // Правый клик — ТОЛЬКО лазер
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
@@ -71,7 +74,7 @@ public class RedCrystalGunItem extends Item {
 
         float damage = 5.0f * (float) data.gunDamageMultiplier;
 
-        // Красные частицы вдоль луча
+        // Видимый лазер — raycast + частицы вдоль луча
         spawnLaserParticles(world, player);
         LaserBeamEntity.shootLaser(world, player, damage * 0.2f);
 
@@ -83,11 +86,26 @@ public class RedCrystalGunItem extends Item {
 
     private static void spawnLaserParticles(World world, PlayerEntity player) {
         if (!(world instanceof ServerWorld serverWorld)) return;
+
+        Vec3d start = player.getEyePos();
         Vec3d look = player.getRotationVec(1.0f);
-        for (int i = 1; i <= 30; i++) {
-            double x = player.getX() + look.x * i;
-            double y = player.getEyeY() + look.y * i;
-            double z = player.getZ() + look.z * i;
+        Vec3d end = start.add(look.multiply(64));
+
+        // Raycast — находим точку попадания
+        BlockHitResult hit = serverWorld.raycast(new RaycastContext(start, end,
+            RaycastContext.ShapeType.COLLIDER,
+            RaycastContext.FluidHandling.NONE,
+            player));
+
+        Vec3d actualEnd = hit.getType() == HitResult.Type.BLOCK ? hit.getPos() : end;
+        double distance = start.distanceTo(actualEnd);
+        int particleCount = (int) (distance * 4); // 4 частицы на блок
+
+        for (int i = 0; i <= particleCount; i++) {
+            double t = (double) i / particleCount;
+            double x = start.x + (actualEnd.x - start.x) * t;
+            double y = start.y + (actualEnd.y - start.y) * t;
+            double z = start.z + (actualEnd.z - start.z) * t;
             serverWorld.spawnParticles(ParticleTypes.CRIMSON_SPORE, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
         }
     }
