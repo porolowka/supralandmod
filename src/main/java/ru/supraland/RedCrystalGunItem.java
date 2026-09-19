@@ -11,7 +11,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.RaycastContext;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import java.util.Map;
@@ -86,17 +85,24 @@ public class RedCrystalGunItem extends Item {
         if (!(world instanceof ServerWorld serverWorld)) return;
 
         Vec3d start = player.getEyePos();
+        // Направление взгляда
         Vec3d look = player.getRotationVec(1.0f);
+        // Конец луча (64 блока)
         Vec3d end = start.add(look.multiply(64));
 
-        BlockHitResult hit = serverWorld.raycast(new RaycastContext(start, end,
-            RaycastContext.ShapeType.COLLIDER,
-            RaycastContext.FluidHandling.NONE,
-            player));
+        // Raycast через World.raycast — это корректно для 1.20.1
+        HitResult hit = world.raycast(start, end, false, false);
 
-        Vec3d actualEnd = hit.getType() == HitResult.Type.BLOCK ? hit.getPos() : end;
+        Vec3d actualEnd = switch (hit.getType()) {
+            case BLOCK -> {
+                BlockHitResult blockHit = (BlockHitResult) hit;
+                yield blockHit.getBlockPos().toCenterPos();
+            }
+            default -> end;
+        };
+
         double distance = start.distanceTo(actualEnd);
-        int particleCount = (int) (distance * 4);
+        int particleCount = (int) (distance * 4); // 4 частицы на блок
 
         DustParticleEffect redDust = new DustParticleEffect(new Vec3d(1.0, 0.0, 0.0), 1.0f);
 
