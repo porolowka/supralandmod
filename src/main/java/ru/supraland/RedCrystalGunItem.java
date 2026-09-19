@@ -9,7 +9,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -25,7 +24,6 @@ public class RedCrystalGunItem extends Item {
         super(settings);
     }
 
-    // Левый клик — шарик
     public static void shootBall(PlayerEntity player) {
         World world = player.getWorld();
         if (world.isClient) return;
@@ -50,7 +48,6 @@ public class RedCrystalGunItem extends Item {
             SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.5f);
     }
 
-    // Правый клик — ТОЛЬКО лазер
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
@@ -86,8 +83,7 @@ public class RedCrystalGunItem extends Item {
         if (!(world instanceof ServerWorld serverWorld)) return;
 
         Vec3d start = player.getEyePos();
-        // player.raycast — точно есть в 1.20.1
-        HitResult hit = player.raycast(64.0);
+        HitResult hit = player.raycast(64.0, 1.0f, false);
 
         Vec3d actualEnd;
         if (hit.getType() == HitResult.Type.BLOCK) {
@@ -100,7 +96,6 @@ public class RedCrystalGunItem extends Item {
         double distance = start.distanceTo(actualEnd);
         int particleCount = Math.max(1, (int) (distance * 4));
 
-        // Vector3f вместо Vec3d — DustParticleEffect требует именно его
         DustParticleEffect redDust = new DustParticleEffect(new Vector3f(1.0f, 0.0f, 0.0f), 1.0f);
 
         for (int i = 0; i <= particleCount; i++) {
