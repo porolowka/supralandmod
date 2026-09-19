@@ -20,7 +20,6 @@ public class LinkingToolItem extends Item {
         super(settings);
     }
 
-    // ПКМ по блоку — выбираем/связываем
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         World world = context.getWorld();
@@ -32,7 +31,6 @@ public class LinkingToolItem extends Item {
 
         BlockState state = world.getBlockState(pos);
 
-        // Проверяем, что блок — наш (приёмник, кнопка или дверь)
         if (!(state.getBlock() instanceof LaserReceiverBlock) &&
             !(state.getBlock() instanceof SupralandButtonBlock) &&
             !(state.getBlock() instanceof SupralandDoorBlock)) {
@@ -43,49 +41,32 @@ public class LinkingToolItem extends Item {
         NbtCompound nbt = stack.getOrCreateNbt();
 
         if (!nbt.contains("first_block")) {
-            // Первый клик — запоминаем блок
             nbt.putLong("first_block", pos.asLong());
             player.sendMessage(Text.literal("§dПервый блок выбран: " + pos.toShortString()), true);
-            world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 1.0f, 1.2f);
+            player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.PLAYERS, 1.0f, 1.2f);
         } else {
-            // Второй клик — связываем
             BlockPos first = BlockPos.fromLong(nbt.getLong("first_block"));
             nbt.remove("first_block");
 
-            // Сохраняем связь в NBT двери
-            if (state.getBlock() instanceof SupralandDoorBlock) {
-                // Дверь запоминает, от какого блока активируется
-                if (world.getBlockEntity(pos) instanceof SupralandDoorBlockEntity doorBe) {
-                    doorBe.setLinkedPos(first);
-                    doorBe.markDirty();
-                }
-            } else if (world.getBlockState(first).getBlock() instanceof SupralandDoorBlock) {
-                // Если первый блок был дверью
-                if (world.getBlockEntity(first) instanceof SupralandDoorBlockEntity doorBe) {
-                    doorBe.setLinkedPos(pos);
-                    doorBe.markDirty();
-                }
-            } else {
-                // Связь приёмник/кнопка → дверь: сохраняем в приёмнике
-                if (world.getBlockEntity(pos) instanceof LaserReceiverBlockEntity receiverBe) {
-                    receiverBe.setLinkedDoor(first);
-                    receiverBe.markDirty();
-                } else if (world.getBlockEntity(first) instanceof LaserReceiverBlockEntity receiverBe) {
-                    receiverBe.setLinkedDoor(pos);
-                    receiverBe.markDirty();
-                }
+            if (world.getBlockEntity(pos) instanceof LaserReceiverBlockEntity receiverBe) {
+                NbtCompound beNbt = receiverBe.writeNbt(new NbtCompound());
+                beNbt.putLong("linked_door", first.asLong());
+                receiverBe.readNbt(beNbt);
+                receiverBe.markDirty();
+            } else if (world.getBlockEntity(first) instanceof LaserReceiverBlockEntity receiverBe) {
+                NbtCompound beNbt = receiverBe.writeNbt(new NbtCompound());
+                beNbt.putLong("linked_door", pos.asLong());
+                receiverBe.readNbt(beNbt);
+                receiverBe.markDirty();
             }
 
-            player.sendMessage(Text.literal("§aСвязано: " + first.toShortString() + " → " + pos.toShortString()), true);
-            world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 1.5f);
+            player.sendMessage(Text.literal("§aСвязано: " + first.toShortString() + " -> " + pos.toShortString()), true);
+            player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME.value(), SoundCategory.PLAYERS, 1.0f, 1.5f);
         }
 
         return ActionResult.SUCCESS;
     }
 
-    // ЛКМ по воздуху — сбросить выбор
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
@@ -95,8 +76,7 @@ public class LinkingToolItem extends Item {
         if (nbt.contains("first_block")) {
             nbt.remove("first_block");
             player.sendMessage(Text.literal("§eВыбор сброшен."), true);
-            world.playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.UI_BUTTON_CLICK, SoundCategory.PLAYERS, 0.5f, 0.8f);
+            player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.PLAYERS, 0.5f, 0.8f);
         }
 
         return TypedActionResult.success(stack);
