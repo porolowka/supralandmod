@@ -37,7 +37,6 @@ public class RedCrystalProjectileEntity extends SnowballEntity {
         return damage;
     }
 
-    // Вот так правильно отключаем гравитацию в 1.20.1
     @Override
     protected float getGravity() {
         return 0.0f;
