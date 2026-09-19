@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.supraland.entity.SupralandNpcEntity;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public class SupralandMod implements ModInitializer {
     public static final String MOD_ID = "supralandmod";
@@ -39,6 +40,14 @@ public class SupralandMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ServerPlayNetworking.registerGlobalReceiver(new Identifier(MOD_ID, "gun_attack"), (server, player, handler, buf, responseSender) -> {
+            server.execute(() -> {
+                if (player.getMainHandStack().getItem() instanceof RedCrystalGunItem) {
+                    RedCrystalGunItem.shootBall(player);
+                }
+            });
+        });
+        
         LOGGER.info("[Supraland Mod] Initializing...");
 
         RED_NPC = Registry.register(Registries.ENTITY_TYPE, id("red_npc"),
