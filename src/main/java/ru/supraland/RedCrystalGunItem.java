@@ -3,7 +3,7 @@ package ru.supraland;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -25,7 +25,7 @@ public class RedCrystalGunItem extends Item {
         super(settings);
     }
 
-    // Левый клик — шарик (вызывается сервером через пакет)
+    // Левый клик — шарик
     public static void shootBall(PlayerEntity player) {
         World world = player.getWorld();
         if (world.isClient) return;
@@ -59,7 +59,6 @@ public class RedCrystalGunItem extends Item {
         PlayerUpgradeData data = PlayerUpgradeData.get(player);
         if (data == null) return TypedActionResult.fail(stack);
 
-        // Нет лазера — правый клик ничего не делает
         if (!data.hasLaser) {
             return TypedActionResult.pass(stack);
         }
@@ -74,7 +73,6 @@ public class RedCrystalGunItem extends Item {
 
         float damage = 5.0f * (float) data.gunDamageMultiplier;
 
-        // Видимый лазер — raycast + частицы вдоль луча
         spawnLaserParticles(world, player);
         LaserBeamEntity.shootLaser(world, player, damage * 0.2f);
 
@@ -91,7 +89,6 @@ public class RedCrystalGunItem extends Item {
         Vec3d look = player.getRotationVec(1.0f);
         Vec3d end = start.add(look.multiply(64));
 
-        // Raycast — находим точку попадания
         BlockHitResult hit = serverWorld.raycast(new RaycastContext(start, end,
             RaycastContext.ShapeType.COLLIDER,
             RaycastContext.FluidHandling.NONE,
@@ -99,14 +96,16 @@ public class RedCrystalGunItem extends Item {
 
         Vec3d actualEnd = hit.getType() == HitResult.Type.BLOCK ? hit.getPos() : end;
         double distance = start.distanceTo(actualEnd);
-        int particleCount = (int) (distance * 4); // 4 частицы на блок
+        int particleCount = (int) (distance * 4);
+
+        DustParticleEffect redDust = new DustParticleEffect(new Vec3d(1.0, 0.0, 0.0), 1.0f);
 
         for (int i = 0; i <= particleCount; i++) {
             double t = (double) i / particleCount;
             double x = start.x + (actualEnd.x - start.x) * t;
             double y = start.y + (actualEnd.y - start.y) * t;
             double z = start.z + (actualEnd.z - start.z) * t;
-            serverWorld.spawnParticles(ParticleTypes.CRIMSON_SPORE, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+            serverWorld.spawnParticles(redDust, x, y, z, 0, 0.0, 0.0, 0.0, 0.0);
         }
     }
 }
