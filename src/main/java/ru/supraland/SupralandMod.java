@@ -4,8 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
@@ -36,6 +37,7 @@ public class SupralandMod implements ModInitializer {
     public static Item SUPRALAND_SWORD;
     public static Item RED_CRYSTAL_GUN;
     public static Item LINKING_TOOL;
+    public static Item UNLINKING_TOOL;
 
     public static Block UPGRADE_CHEST;
     public static Block LASER_RECEIVER;
@@ -52,6 +54,7 @@ public class SupralandMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        // --- Сеть: стрельба из пушки ---
         ServerPlayNetworking.registerGlobalReceiver(new Identifier(MOD_ID, "gun_attack"), (server, player, handler, buf, responseSender) -> {
             server.execute(() -> {
                 if (player.getMainHandStack().getItem() instanceof RedCrystalGunItem) {
@@ -60,6 +63,15 @@ public class SupralandMod implements ModInitializer {
             });
         });
 
+        // --- Сеть: синхронизация связей ---
+        LinkSync.register();
+
+        // При входе игрока на сервер — отправляем ему все существующие связи
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            server.execute(() -> LinkSync.sendFullSync(handler.player));
+        });
+
+        // --- Настройки сервера ---
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             server.getGameRules().get(GameRules.DO_MOB_SPAWNING).set(false, server);
         });
@@ -72,6 +84,7 @@ public class SupralandMod implements ModInitializer {
 
         LOGGER.info("[Supraland Mod] Initializing...");
 
+        // --- NPC ---
         RED_NPC = Registry.register(Registries.ENTITY_TYPE, id("red_npc"),
             EntityType.Builder.<SupralandNpcEntity>create(
                 (type, world) -> new SupralandNpcEntity(type, world, 1.0f, 0.0f, 0.0f),
@@ -86,6 +99,7 @@ public class SupralandMod implements ModInitializer {
                 .setDimensions(0.6f, 1.8f)
                 .build("blue_npc"));
 
+        // --- Предметы ---
         SUPRALAND_SWORD = new SupralandSwordItem(new Item.Settings().maxCount(1));
         Registry.register(Registries.ITEM, id("supraland_sword"), SUPRALAND_SWORD);
 
@@ -95,9 +109,12 @@ public class SupralandMod implements ModInitializer {
         LINKING_TOOL = new LinkingToolItem(new Item.Settings().maxCount(1));
         Registry.register(Registries.ITEM, id("linking_tool"), LINKING_TOOL);
 
+        UNLINKING_TOOL = new UnlinkingToolItem(new Item.Settings().maxCount(1));
+        Registry.register(Registries.ITEM, id("unlinking_tool"), UNLINKING_TOOL);
+
+        // --- Блоки ---
         UPGRADE_CHEST = new UpgradeChestBlock(AbstractBlock.Settings.create().strength(-1.0f).sounds(BlockSoundGroup.WOOD));
         Registry.register(Registries.BLOCK, id("upgrade_chest"), UPGRADE_CHEST);
-        Registry.register(Registries.ITEM, id("upgrade_chest"), new BlockItem(UPGRADE_CHEST, new Item.Settings()));
 
         LASER_RECEIVER = new LaserReceiverBlock(AbstractBlock.Settings.create().strength(3.0f).sounds(BlockSoundGroup.METAL).luminance(s -> 7));
         Registry.register(Registries.BLOCK, id("laser_receiver"), LASER_RECEIVER);
@@ -111,21 +128,23 @@ public class SupralandMod implements ModInitializer {
         Registry.register(Registries.BLOCK, id("supraland_button"), SUPRALAND_BUTTON);
         Registry.register(Registries.ITEM, id("supraland_button"), new BlockItem(SUPRALAND_BUTTON, new Item.Settings()));
 
+        // --- Block Entities ---
         UPGRADE_CHEST_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, id("upgrade_chest"),
             FabricBlockEntityTypeBuilder.create(UpgradeChestBlockEntity::new, UPGRADE_CHEST).build());
         LASER_RECEIVER_BE = Registry.register(Registries.BLOCK_ENTITY_TYPE, id("laser_receiver"),
             FabricBlockEntityTypeBuilder.create(LaserReceiverBlockEntity::new, LASER_RECEIVER).build());
 
+        // --- Сущности ---
         RedCrystalProjectileEntity.register();
 
-        // Регистрируем сундучки-улучшения ДО создания вкладки
+        // --- Сундучки-улучшения (теперь BlockItem — ставятся в мир) ---
         for (UpgradeType type : UpgradeType.values()) {
-            Item chestItem = new UpgradeChestItem(new Item.Settings().maxCount(1), type);
+            Item chestItem = new UpgradeChestItem(UPGRADE_CHEST, new Item.Settings().maxCount(1), type);
             Registry.register(Registries.ITEM, id("chest_" + type.name().toLowerCase()), chestItem);
             UPGRADE_CHEST_ITEMS.add(chestItem);
         }
 
-        // Создаём кастомную вкладку Supraland
+        // --- Креативная вкладка ---
         SUPRALAND_ITEM_GROUP = FabricItemGroup.builder()
             .icon(() -> new ItemStack(RED_CRYSTAL_GUN))
             .displayName(Text.literal("Supraland"))
@@ -133,7 +152,7 @@ public class SupralandMod implements ModInitializer {
                 entries.add(SUPRALAND_SWORD);
                 entries.add(RED_CRYSTAL_GUN);
                 entries.add(LINKING_TOOL);
-                entries.add(UPGRADE_CHEST.asItem());
+                entries.add(UNLINKING_TOOL);
                 entries.add(LASER_RECEIVER.asItem());
                 entries.add(SUPRALAND_DOOR.asItem());
                 entries.add(SUPRALAND_BUTTON.asItem());
