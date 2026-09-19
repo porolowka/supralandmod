@@ -1,6 +1,7 @@
 package ru.supraland;
 
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,10 +13,9 @@ import net.minecraft.world.World;
 
 public class SupralandDoorBlock extends DoorBlock {
     public SupralandDoorBlock(AbstractBlock.Settings settings) {
-        super(settings);
+        super(settings, BlockSetType.IRON);
     }
 
-    // Дверь нельзя открыть рукой — только через связыватель
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos,
                              PlayerEntity player, Hand hand, BlockHitResult hit) {
