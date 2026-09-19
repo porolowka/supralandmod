@@ -4,7 +4,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractBlock;
@@ -17,9 +16,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
@@ -30,7 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.supraland.entity.SupralandNpcEntity;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SupralandMod implements ModInitializer {
     public static final String MOD_ID = "supralandmod";
@@ -50,8 +47,8 @@ public class SupralandMod implements ModInitializer {
     public static EntityType<SupralandNpcEntity> RED_NPC;
     public static EntityType<SupralandNpcEntity> BLUE_NPC;
 
-    // Кастомная вкладка Supraland
     public static ItemGroup SUPRALAND_ITEM_GROUP;
+    public static final List<Item> UPGRADE_CHEST_ITEMS = new ArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -121,11 +118,16 @@ public class SupralandMod implements ModInitializer {
 
         RedCrystalProjectileEntity.register();
 
+        // Регистрируем сундучки-улучшения ДО создания вкладки
+        for (UpgradeType type : UpgradeType.values()) {
+            Item chestItem = new UpgradeChestItem(new Item.Settings().maxCount(1), type);
+            Registry.register(Registries.ITEM, id("chest_" + type.name().toLowerCase()), chestItem);
+            UPGRADE_CHEST_ITEMS.add(chestItem);
+        }
+
         // Создаём кастомную вкладку Supraland
-        // Иконка — голова игрока с кастомной текстурой (красная с белыми глазами)
-        // Пока используется пушка как иконка, потом поменяем на голову
         SUPRALAND_ITEM_GROUP = FabricItemGroup.builder()
-            .icon(() -> createRedHeadIcon())
+            .icon(() -> new ItemStack(RED_CRYSTAL_GUN))
             .displayName(Text.literal("Supraland"))
             .entries((context, entries) -> {
                 entries.add(SUPRALAND_SWORD);
@@ -135,8 +137,7 @@ public class SupralandMod implements ModInitializer {
                 entries.add(LASER_RECEIVER.asItem());
                 entries.add(SUPRALAND_DOOR.asItem());
                 entries.add(SUPRALAND_BUTTON.asItem());
-                for (UpgradeType type : UpgradeType.values()) {
-                    Item chestItem = Registries.ITEM.get(id("chest_" + type.name().toLowerCase()));
+                for (Item chestItem : UPGRADE_CHEST_ITEMS) {
                     entries.add(chestItem);
                 }
             })
@@ -145,33 +146,6 @@ public class SupralandMod implements ModInitializer {
         Registry.register(Registries.ITEM_GROUP, id("supraland"), SUPRALAND_ITEM_GROUP);
 
         LOGGER.info("[Supraland Mod] Done!");
-    }
-
-    // Создаёт голову игрока с красной текстурой
-    // Когда у тебя будет своя текстура — замени TEXTURE_VALUE на свой base64
-    private static ItemStack createRedHeadIcon() {
-        ItemStack head = new ItemStack(Items.PLAYER_HEAD);
-        NbtCompound nbt = head.getOrCreateNbt();
-
-        NbtCompound skullOwner = new NbtCompound();
-        skullOwner.putUuid("Id", UUID.randomUUID());
-
-        NbtCompound properties = new NbtCompound();
-        NbtList textures = new NbtList();
-        NbtCompound texture = new NbtCompound();
-
-        // Base64 от {"textures":{"SKIN":{"url":"http://textures.minecraft.net/texture/TEXTURE_HASH"}}}
-        // ПОКА: заглушка — замени на свою текстуру позже
-        String base64 = java.util.Base64.getEncoder().encodeToString(
-            "{\"textures\":{\"SKIN\":{\"url\":\"http://textures.minecraft.net/texture/d1c837a3c6f5a4f5e8a0b3c2d1e0f3a2b1c0d3e4f5a6b7c8d9e0f1a2b3c4d5e6\"}}}".getBytes()
-        );
-        texture.putString("Value", base64);
-        textures.add(texture);
-        properties.put("textures", textures);
-        skullOwner.put("Properties", properties);
-
-        nbt.put("SkullOwner", skullOwner);
-        return head;
     }
 
     public static Identifier id(String path) {
