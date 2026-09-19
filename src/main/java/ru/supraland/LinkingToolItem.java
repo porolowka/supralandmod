@@ -14,10 +14,18 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LinkingToolItem extends Item {
+    private static final Map<BlockPos, BlockPos> links = new HashMap<>();
+
     public LinkingToolItem(Settings settings) {
         super(settings);
+    }
+
+    public static BlockPos getLinkedDoor(BlockPos from) {
+        return links.get(from);
     }
 
     @Override
@@ -48,20 +56,11 @@ public class LinkingToolItem extends Item {
             BlockPos first = BlockPos.fromLong(nbt.getLong("first_block"));
             nbt.remove("first_block");
 
-            if (world.getBlockEntity(pos) instanceof LaserReceiverBlockEntity receiverBe) {
-                NbtCompound beNbt = receiverBe.writeNbt(new NbtCompound());
-                beNbt.putLong("linked_door", first.asLong());
-                receiverBe.readNbt(beNbt);
-                receiverBe.markDirty();
-            } else if (world.getBlockEntity(first) instanceof LaserReceiverBlockEntity receiverBe) {
-                NbtCompound beNbt = receiverBe.writeNbt(new NbtCompound());
-                beNbt.putLong("linked_door", pos.asLong());
-                receiverBe.readNbt(beNbt);
-                receiverBe.markDirty();
-            }
+            links.put(first, pos);
+            links.put(pos, first);
 
             player.sendMessage(Text.literal("§aСвязано: " + first.toShortString() + " -> " + pos.toShortString()), true);
-            player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME.value(), SoundCategory.PLAYERS, 1.0f, 1.5f);
+            player.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 1.5f);
         }
 
         return ActionResult.SUCCESS;
