@@ -13,6 +13,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,26 +86,22 @@ public class RedCrystalGunItem extends Item {
         if (!(world instanceof ServerWorld serverWorld)) return;
 
         Vec3d start = player.getEyePos();
-        // Направление взгляда
-        Vec3d look = player.getRotationVec(1.0f);
-        // Конец луча (64 блока)
-        Vec3d end = start.add(look.multiply(64));
+        // player.raycast — точно есть в 1.20.1
+        HitResult hit = player.raycast(64.0);
 
-        // Raycast через World.raycast — это корректно для 1.20.1
-        HitResult hit = world.raycast(start, end, false, false);
-
-        Vec3d actualEnd = switch (hit.getType()) {
-            case BLOCK -> {
-                BlockHitResult blockHit = (BlockHitResult) hit;
-                yield blockHit.getBlockPos().toCenterPos();
-            }
-            default -> end;
-        };
+        Vec3d actualEnd;
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            actualEnd = hit.getPos();
+        } else {
+            Vec3d look = player.getRotationVec(1.0f);
+            actualEnd = start.add(look.multiply(64));
+        }
 
         double distance = start.distanceTo(actualEnd);
-        int particleCount = (int) (distance * 4); // 4 частицы на блок
+        int particleCount = Math.max(1, (int) (distance * 4));
 
-        DustParticleEffect redDust = new DustParticleEffect(new Vec3d(1.0, 0.0, 0.0), 1.0f);
+        // Vector3f вместо Vec3d — DustParticleEffect требует именно его
+        DustParticleEffect redDust = new DustParticleEffect(new Vector3f(1.0f, 0.0f, 0.0f), 1.0f);
 
         for (int i = 0; i <= particleCount; i++) {
             double t = (double) i / particleCount;
