@@ -30,7 +30,7 @@ public class SupralandButtonBlock extends ButtonBlock {
         world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.6f);
         world.scheduleBlockTick(pos, this, 20);
 
-        LinkingToolItem.activateLinkedButton(world, pos);
+        LinkingToolItem.toggleDoorFromButton(world, pos);
 
         return ActionResult.CONSUME;
     }
@@ -41,14 +41,5 @@ public class SupralandButtonBlock extends ButtonBlock {
             world.setBlockState(pos, state.with(POWERED, false), 3);
             world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.5f);
         }
-    }
-
-    public static void pressButton(World world, BlockPos pos, BlockState state) {
-        if (world.isClient) return;
-        if (state.get(POWERED)) return;
-
-        world.setBlockState(pos, state.with(POWERED, true), 3);
-        world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.6f);
-        world.scheduleBlockTick(pos, state.getBlock(), 20);
     }
 }
