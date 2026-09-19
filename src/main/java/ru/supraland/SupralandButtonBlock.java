@@ -1,5 +1,6 @@
 package ru.supraland;
 
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,12 +13,11 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public class SupralandButtonBlock extends ButtonBlock {
 
     public SupralandButtonBlock(Settings settings) {
-        super(settings, 20, false);
+        super(settings, BlockSetType.OAK, 20, false);
     }
 
     @Override
@@ -41,11 +41,6 @@ public class SupralandButtonBlock extends ButtonBlock {
             world.setBlockState(pos, state.with(POWERED, false), 3);
             world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.5f);
         }
-    }
-
-    @Override
-    public void powerlessTick(WorldAccess world, BlockPos pos, BlockState state, Random random) {
-        // не используется
     }
 
     public static void pressButton(World world, BlockPos pos, BlockState state) {
