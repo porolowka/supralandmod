@@ -19,11 +19,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RedCrystalGunItem extends Item {
     private static final Map<UUID, Long> lastShotTimes = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> lastLaserTimes = new ConcurrentHashMap<>();
+
+    // Лазер: кулдаун 3 тика (очень быстрый), урон 1.0 (слабый)
+    private static final long LASER_COOLDOWN = 3;
+    private static final float LASER_DAMAGE = 1.0f;
 
     public RedCrystalGunItem(Settings settings) {
         super(settings);
     }
 
+    // Левый клик — шарик (кулдаун 20 тиков, урон 5 * множитель)
     public static void shootBall(PlayerEntity player) {
         World world = player.getWorld();
         if (world.isClient) return;
@@ -48,6 +54,7 @@ public class RedCrystalGunItem extends Item {
             SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.5f);
     }
 
+    // Правый клик — ТОЛЬКО лазер (быстрый, слабый)
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
@@ -61,20 +68,17 @@ public class RedCrystalGunItem extends Item {
         }
 
         long currentTime = world.getTime();
-        long cooldown = (long) (20 / data.fireRateMultiplier);
-        long lastShot = lastShotTimes.getOrDefault(player.getUuid(), 0L);
-        if (currentTime - lastShot < cooldown) {
+        long lastLaser = lastLaserTimes.getOrDefault(player.getUuid(), 0L);
+        if (currentTime - lastLaser < LASER_COOLDOWN) {
             return TypedActionResult.pass(stack);
         }
-        lastShotTimes.put(player.getUuid(), currentTime);
-
-        float damage = 5.0f * (float) data.gunDamageMultiplier;
+        lastLaserTimes.put(player.getUuid(), currentTime);
 
         spawnLaserParticles(world, player);
-        LaserBeamEntity.shootLaser(world, player, damage * 0.2f);
+        LaserBeamEntity.shootLaser(world, player, LASER_DAMAGE);
 
         world.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0f, 2.0f);
+            SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 0.3f, 2.0f);
 
         return TypedActionResult.success(stack);
     }
