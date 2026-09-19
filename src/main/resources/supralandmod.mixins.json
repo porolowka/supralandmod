@@ -8,7 +8,9 @@
         "PlayerMovementMixin",
         "PlayerLandMixin"
     ],
-    "client": [],
+    "client": [
+        "ClientAttackMixin"
+    ],
     "injectors": {
         "defaultRequire": 1
     }
