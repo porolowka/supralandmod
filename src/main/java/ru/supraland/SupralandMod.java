@@ -1,24 +1,30 @@
 package ru.supraland;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.supraland.entity.SupralandNpcEntity;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public class SupralandMod implements ModInitializer {
     public static final String MOD_ID = "supralandmod";
@@ -47,7 +53,17 @@ public class SupralandMod implements ModInitializer {
                 }
             });
         });
-        
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            server.getGameRules().get(GameRules.DO_MOB_SPAWNING).set(false, server);
+        });
+
+        ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+            if (entity instanceof MobEntity && !(entity instanceof SupralandNpcEntity)) {
+                entity.discard();
+            }
+        });
+
         LOGGER.info("[Supraland Mod] Initializing...");
 
         RED_NPC = Registry.register(Registries.ENTITY_TYPE, id("red_npc"),
@@ -106,10 +122,26 @@ public class SupralandMod implements ModInitializer {
             entries.add(SUPRALAND_BUTTON.asItem());
         });
 
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(entries -> {
+            for (Item item : Registries.ITEM) {
+                if (item instanceof SpawnEggItem) {
+                    entries.remove(new ItemStack(item));
+                }
+            }
+            entries.add(SUPRALAND_SWORD);
+            entries.add(RED_CRYSTAL_GUN);
+            entries.add(LINKING_TOOL);
+            entries.add(UPGRADE_CHEST.asItem());
+            entries.add(LASER_RECEIVER.asItem());
+            entries.add(SUPRALAND_DOOR.asItem());
+            entries.add(SUPRALAND_BUTTON.asItem());
+        });
+
         for (UpgradeType type : UpgradeType.values()) {
             Item chestItem = new UpgradeChestItem(new Item.Settings(), type);
             Registry.register(Registries.ITEM, id("chest_" + type.name().toLowerCase()), chestItem);
             ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(e -> e.add(chestItem));
+            ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(e -> e.add(chestItem));
         }
 
         LOGGER.info("[Supraland Mod] Done!");
