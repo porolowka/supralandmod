@@ -1,4 +1,6 @@
 {
-    "parent": "block/cube_all",
-    "textures": { "all": "supralandmod:block/laser_receiver" }
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "supralandmod:block/laser_receiver"
+  }
 }
