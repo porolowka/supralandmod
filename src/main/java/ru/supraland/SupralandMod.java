@@ -66,7 +66,6 @@ public class SupralandMod implements ModInitializer {
         // --- Сеть: синхронизация связей ---
         LinkSync.register();
 
-        // При входе игрока на сервер — отправляем ему все существующие связи
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             server.execute(() -> LinkSync.sendFullSync(handler.player));
         });
@@ -115,6 +114,7 @@ public class SupralandMod implements ModInitializer {
         // --- Блоки ---
         UPGRADE_CHEST = new UpgradeChestBlock(AbstractBlock.Settings.create().strength(-1.0f).sounds(BlockSoundGroup.WOOD));
         Registry.register(Registries.BLOCK, id("upgrade_chest"), UPGRADE_CHEST);
+        Registry.register(Registries.ITEM, id("upgrade_chest"), new BlockItem(UPGRADE_CHEST, new Item.Settings()));
 
         LASER_RECEIVER = new LaserReceiverBlock(AbstractBlock.Settings.create().strength(3.0f).sounds(BlockSoundGroup.METAL).luminance(s -> 7));
         Registry.register(Registries.BLOCK, id("laser_receiver"), LASER_RECEIVER);
@@ -137,9 +137,9 @@ public class SupralandMod implements ModInitializer {
         // --- Сущности ---
         RedCrystalProjectileEntity.register();
 
-        // --- Сундучки-улучшения (теперь BlockItem — ставятся в мир) ---
+        // --- Сундучки-улучшения ---
         for (UpgradeType type : UpgradeType.values()) {
-            Item chestItem = new UpgradeChestItem(UPGRADE_CHEST, new Item.Settings().maxCount(1), type);
+            Item chestItem = new UpgradeChestItem(new Item.Settings().maxCount(1), type);
             Registry.register(Registries.ITEM, id("chest_" + type.name().toLowerCase()), chestItem);
             UPGRADE_CHEST_ITEMS.add(chestItem);
         }
@@ -153,6 +153,7 @@ public class SupralandMod implements ModInitializer {
                 entries.add(RED_CRYSTAL_GUN);
                 entries.add(LINKING_TOOL);
                 entries.add(UNLINKING_TOOL);
+                entries.add(UPGRADE_CHEST.asItem());
                 entries.add(LASER_RECEIVER.asItem());
                 entries.add(SUPRALAND_DOOR.asItem());
                 entries.add(SUPRALAND_BUTTON.asItem());
